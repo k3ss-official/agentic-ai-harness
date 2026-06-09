@@ -1,0 +1,41 @@
+# Model Registry — approved AI models for use in agentic workflows
+version: "1.0"
+last_reviewed: "2026-06-01"
+
+approved_models:
+  - id: "gpt-4o-mini"
+    provider: "openai"
+    use_cases: [general, summarisation, classification]
+    data_classification_max: internal
+    pii_permitted: false
+    approved_by: "ciso@acme-corp.example.com"
+    approved_date: "2026-01-15"
+    review_date: "2026-07-15"
+    notes: "Approved for internal data only. No PII, no RESTRICTED data."
+
+  - id: "claude-sonnet-4-5"
+    provider: "anthropic"
+    use_cases: [reasoning, document-analysis, coding]
+    data_classification_max: internal
+    pii_permitted: false
+    approved_by: "ciso@acme-corp.example.com"
+    approved_date: "2026-02-01"
+    review_date: "2026-08-01"
+    notes: "Approved for reasoning tasks. Constitutional AI reduces certain risk classes."
+
+  - id: "acme-internal-llm-v2"
+    provider: "self-hosted"
+    endpoint: "https://llm.acme-internal.example.com/v1"
+    use_cases: [summarisation, classification, restricted-data]
+    data_classification_max: restricted
+    pii_permitted: true
+    approved_by: "ciso@acme-corp.example.com"
+    approved_date: "2025-11-01"
+    review_date: "2026-11-01"
+    notes: "Self-hosted model approved for RESTRICTED data and PII processing. Data never leaves corporate network."
+
+unapproved_models:
+  - id: "gpt-4o"
+    reason: "Cost/benefit not justified for current use cases; use gpt-4o-mini instead"
+  - id: "*"
+    reason: "Default deny — all models require explicit approval"

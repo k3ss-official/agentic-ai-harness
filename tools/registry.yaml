@@ -1,0 +1,85 @@
+# Agentic AI Harness — Tool Registry
+# Every tool the agent is allowed to invoke must be declared here.
+# Undeclared tools are blocked by the orchestrator.
+#
+# side_effect_class: read | write | external | financial
+# required_approval_level: none | async | sync | blocked
+
+version: "1.0"
+registry_owner: "security@acme-corp.example.com"
+last_reviewed: "2026-06-01"
+
+tools:
+  - name: crm_lookup
+    description: "Read-only lookup of customer records by email or ID. No data modification."
+    side_effect_class: read
+    required_approval_level: none
+    scoped_credential_key: CRM_READ_TOKEN
+    allowed_parameters:
+      - customer_id
+      - email
+    rate_limit_per_minute: 120
+    timeout_seconds: 10
+    tags: [crm, read-only, customer-data]
+
+  - name: db_read
+    description: "Read a record from the internal database. Read-only, no side effects."
+    side_effect_class: read
+    required_approval_level: none
+    scoped_credential_key: DB_READ_TOKEN
+    allowed_parameters:
+      - table
+      - record_id
+      - fields
+    rate_limit_per_minute: 200
+    timeout_seconds: 5
+    tags: [database, read-only]
+
+  - name: db_write
+    description: "Write or update a record in the internal database. Modifies persistent state."
+    side_effect_class: write
+    required_approval_level: sync
+    scoped_credential_key: DB_WRITE_TOKEN
+    allowed_parameters:
+      - table
+      - record_id
+      - data
+    rate_limit_per_minute: 20
+    timeout_seconds: 10
+    tags: [database, write, requires-approval]
+
+  - name: send_email
+    description: "Send an email to a recipient. External action with communication side effects."
+    side_effect_class: external
+    required_approval_level: sync
+    scoped_credential_key: EMAIL_API_TOKEN
+    allowed_parameters:
+      - to
+      - subject
+      - body
+      - cc
+    rate_limit_per_minute: 5
+    timeout_seconds: 15
+    tags: [email, external, communication, requires-approval]
+
+  - name: http_get
+    description: "Make a read-only HTTP GET to an approved external endpoint."
+    side_effect_class: external
+    required_approval_level: async
+    scoped_credential_key: HTTP_API_TOKEN
+    allowed_parameters:
+      - url
+      - headers
+    rate_limit_per_minute: 30
+    timeout_seconds: 20
+    tags: [http, external, read]
+
+  - name: payment_transfer
+    description: "Initiate a financial transfer. BLOCKED — never allowed via agentic workflow."
+    side_effect_class: financial
+    required_approval_level: blocked
+    scoped_credential_key: null
+    allowed_parameters: []
+    rate_limit_per_minute: 0
+    timeout_seconds: 0
+    tags: [financial, blocked, never-use]

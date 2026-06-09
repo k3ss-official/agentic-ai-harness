@@ -1,0 +1,65 @@
+# Agentic AI Harness — Policy Rules
+# Rules are evaluated in priority order (lower number = higher priority).
+# First matching rule wins.
+# action: allow | block | require_approval | sanitise | escalate
+
+version: "1.0"
+policy_owner: "security@acme-corp.example.com"
+last_reviewed: "2026-06-01"
+
+rules:
+  - id: "INJ-001"
+    name: "Block prompt injection attempts"
+    pattern: "ignore (previous|all|prior) instructions|forget your (instructions|system prompt)|you are now|act as (if you|a different|an evil|DAN)|jailbreak|bypass (safety|guardrails|restrictions)"
+    action: block
+    reason: "Pattern matches known prompt injection attack signatures"
+    priority: 1
+
+  - id: "INJ-002"
+    name: "Block instruction override attempts"
+    pattern: "your new instructions are|disregard your guidelines|you must now follow|override (your|all|the) (rules|restrictions|guidelines)"
+    action: block
+    reason: "Attempt to override agent system instructions"
+    priority: 2
+
+  - id: "FIN-001"
+    name: "Block financial action requests"
+    pattern: "transfer (money|funds|payment|bitcoin|crypto)|send (money|payment|funds)|wire transfer|make a payment|initiate (a )?payment"
+    action: block
+    reason: "Financial transactions are never allowed via agentic workflows"
+    priority: 5
+
+  - id: "CRED-001"
+    name: "Block credential exfiltration attempts"
+    pattern: "show me (your|the|all) (credentials|passwords|api keys|tokens|secrets)|what is (your|the) (password|api key|token|secret)|export (credentials|keys|tokens)"
+    action: block
+    reason: "Attempt to exfiltrate credentials or secrets"
+    priority: 5
+
+  - id: "DATA-001"
+    name: "Block bulk data deletion"
+    pattern: "delete (all|every|multiple) (records|entries|rows|documents)|truncate|drop (table|database)"
+    action: block
+    reason: "Bulk data deletion is never allowed via agentic workflows"
+    priority: 5
+
+  - id: "PII-001"
+    name: "Flag PII-heavy requests for approval"
+    pattern: "all (customer|user|employee) (emails|phone numbers|addresses|personal data)|export (customer|user|employee) (data|records|information)"
+    action: require_approval
+    reason: "Bulk PII access requires explicit approval"
+    priority: 10
+
+  - id: "EXT-001"
+    name: "Flag external communication for approval"
+    pattern: "send (an )?email|notify (customer|user|team)|post (to|on) (slack|teams|twitter)"
+    action: require_approval
+    reason: "External communications require human review"
+    priority: 20
+
+  - id: "ALLOW-001"
+    name: "Allow standard queries"
+    pattern: "."
+    action: allow
+    reason: "Default allow rule — no restrictions matched"
+    priority: 999

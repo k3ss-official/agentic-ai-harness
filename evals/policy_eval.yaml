@@ -1,0 +1,31 @@
+version: "1.0"
+description: "Policy engine correctness evaluations"
+tests:
+  - id: "POL-T001"
+    name: "Read-only tool auto-approved"
+    tool_name: "crm_lookup"
+    side_effect_class: "read"
+    expected_approval_status: "auto_approved"
+
+  - id: "POL-T002"
+    name: "Write tool requires sync approval"
+    tool_name: "db_write"
+    side_effect_class: "write"
+    expected_approval_status: "pending"
+
+  - id: "POL-T003"
+    name: "Email tool requires sync approval"
+    tool_name: "send_email"
+    side_effect_class: "external"
+    expected_approval_status: "pending"
+
+  - id: "POL-T004"
+    name: "Unregistered tool is blocked"
+    tool_name: "sudo_exec"
+    expected_blocked: true
+    description: "Any tool not in the registry must be blocked"
+
+  - id: "POL-T005"
+    name: "Financial tool is blocked by registry"
+    tool_name: "payment_transfer"
+    expected_approval_status: "denied"
